@@ -9,6 +9,7 @@ let cards = [];
 let progress = load();
 let queue = [];
 let current = null;
+let done = 0;
 
 function load() {
   try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; }
@@ -43,22 +44,26 @@ function showHome() {
   const add = (name, t, filter) => {
     const b = document.createElement('button');
     b.className = 'topic';
-    b.innerHTML = '<span></span><span class="count"></span>';
-    b.children[0].textContent = name;
-    b.children[1].textContent = t.due ? `${t.due} due` : `${t.total} cards`;
+    b.innerHTML = '<span class="badge"></span><span class="name"><b></b><small></small></span>';
+    b.children[0].textContent = name[0];
+    b.querySelector('b').textContent = name;
+    b.querySelector('small').textContent = t.due ? `${t.due} due today` : `${t.total} cards · all caught up`;
+    if (t.due) b.classList.add('has-due');
     b.onclick = () => start(filter);
     list.append(b);
   };
   const due = cards.filter(isDue).length;
   add('Everything', { total: cards.length, due }, () => true);
   for (const [name, t] of Object.entries(topics).sort()) add(name, t, c => c.topic === name);
-  $('#summary').textContent = due ? `${due} cards due today` : 'All caught up. Tap a topic to practise anyway.';
+  $('#dueChip').textContent = `🎯 ${due}`;
+  $('#summary').textContent = due ? `${due} cards due today. Pick a topic.` : 'All caught up. Tap a topic to practise anyway.';
 }
 
 function start(filter) {
   const pool = cards.filter(filter);
   const due = pool.filter(isDue);
   queue = shuffled(due.length ? due : pool);
+  done = 0;
   $('#home').hidden = true;
   $('#study').hidden = false;
   next();
@@ -68,10 +73,10 @@ function next() {
   const card = queue.shift();
   if (!card) return showHome();
   current = { card, ...build(card) };
-  $('#left').textContent = `${queue.length + 1} left · ${card.topic}`;
+  $('#progress').style.width = `${(done / (done + queue.length + 1)) * 100}%`;
+  $('#topicLabel').textContent = card.topic;
   $('#question').textContent = current.q;
-  $('#explain').hidden = true;
-  $('#next').hidden = true;
+  $('#sheet').hidden = true;
   const opts = $('#options');
   opts.replaceChildren();
   for (const o of current.options) {
@@ -93,15 +98,19 @@ function answer(btn, choice) {
     btn.classList.add('wrong');
     queue.push(current.card); // see it again this session, with new numbers
   }
+  else done++;
   grade(current.card, right);
-  $('#explain').textContent = (right ? '✓ Correct. ' : '✗ Not quite. ') + current.explain;
-  $('#explain').hidden = false;
-  $('#next').hidden = false;
+  if (!queue.length && right) $('#progress').style.width = '100%';
+  $('#sheet').className = right ? 'right' : 'wrong';
+  $('#verdict').textContent = right ? '✓ Nice one!' : '✗ Correct solution:';
+  $('#solution').textContent = right ? '' : current.correct;
+  $('#explain').textContent = current.explain;
+  $('#sheet').hidden = false;
   $('#next').focus();
 }
 
 $('#next').onclick = next;
-$('#back').onclick = showHome;
+$('#back').onclick = () => { $('#sheet').hidden = true; showHome(); };
 
 $('#export').onclick = () => {
   const a = document.createElement('a');

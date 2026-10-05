@@ -4,18 +4,25 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Flashcards</title>
-<meta name="theme-color" content="#4f46e5">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#131f24" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Flashcards">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <main id="home">
-  <h1>Flashcards</h1>
+  <header class="bar">
+    <h1>Flashcards</h1>
+    <span id="dueChip" class="chip"></span>
+  </header>
   <p id="summary">Loading…</p>
   <div id="topics"></div>
   <footer>
@@ -25,12 +32,22 @@
   </footer>
 </main>
 <main id="study" hidden>
-  <header><button id="back" class="link" aria-label="Back to topics">‹ Topics</button><span id="left"></span></header>
-  <p id="question"></p>
+  <header class="bar">
+    <button id="back" class="close" aria-label="Back to topics">✕</button>
+    <div class="progress" role="progressbar" aria-label="Session progress"><div id="progress"></div></div>
+  </header>
+  <p id="topicLabel"></p>
+  <h2 id="question"></h2>
   <div id="options"></div>
-  <p id="explain" hidden></p>
-  <button id="next" class="primary" hidden>Next</button>
 </main>
+<div id="sheet" hidden>
+  <div class="sheet-inner">
+    <h3 id="verdict"></h3>
+    <p id="solution"></p>
+    <p id="explain"></p>
+    <button id="next" class="btn">Continue</button>
+  </div>
+</div>
 <script type="module" src="app.js"></script>
 </body>
 </html>
