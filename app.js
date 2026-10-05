@@ -214,4 +214,9 @@ try {
 }
 showHome();
 
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+if ('serviceWorker' in navigator) {
+  // When an updated worker takes over, reload once so every file comes from the same version.
+  const hadWorker = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => { if (hadWorker) location.reload(); });
+  navigator.serviceWorker.register('sw.js');
+}
