@@ -19,27 +19,59 @@
 </head>
 <body>
 <main id="home">
-  <header class="bar">
-    <h1>Flashcards</h1>
-    <span id="dueChip" class="chip"></span>
+  <header class="stats">
+    <span class="stat streak" title="Day streak">🔥 <b id="streak">0</b></span>
+    <span class="stat xp" title="Total XP">⚡ <b id="xp">0</b></span>
+    <span class="stat due" title="Cards due today">🎯 <b id="due">0</b></span>
   </header>
-  <p id="summary">Loading…</p>
-  <div id="topics"></div>
+  <p id="summary"></p>
+  <div id="path"></div>
   <footer>
     <button id="export" class="link">Back up progress</button>
     <button id="import" class="link">Restore</button>
     <input id="importFile" type="file" accept="application/json" hidden>
   </footer>
 </main>
+
 <main id="study" hidden>
   <header class="bar">
-    <button id="back" class="close" aria-label="Back to topics">✕</button>
-    <div class="progress" role="progressbar" aria-label="Session progress"><div id="progress"></div></div>
+    <button id="back" class="close" aria-label="Quit lesson">✕</button>
+    <div class="progress" role="progressbar" aria-label="Lesson progress"><div id="progress"></div></div>
   </header>
-  <p id="topicLabel"></p>
-  <h2 id="question"></h2>
+  <h2 class="prompt">Select the correct answer</h2>
+  <div class="ask">
+    <span class="mascot small"></span>
+    <p id="question" class="bubble"></p>
+  </div>
   <div id="options"></div>
+  <div class="dock"><button id="check" class="btn" disabled>Check</button></div>
 </main>
+
+<main id="done" hidden>
+  <div class="done-body">
+    <span class="mascot big cheer"></span>
+    <h2 class="done-title">Lesson complete!</h2>
+    <div class="tiles">
+      <div class="tile gold"><small>Total XP</small><b id="tXp"></b></div>
+      <div class="tile green"><small id="tAccLabel">Amazing</small><b id="tAcc"></b></div>
+      <div class="tile blue"><small id="tTimeLabel">Speedy</small><b id="tTime"></b></div>
+    </div>
+  </div>
+  <div class="dock stack">
+    <button id="toRecap" class="btn outline">Lesson recap</button>
+    <button id="claim" class="btn blue">Continue</button>
+  </div>
+</main>
+
+<main id="recap" hidden>
+  <header class="bar"><button id="recapBack" class="close" aria-label="Back">←</button></header>
+  <h2 class="recap-title wrong-text">Review your mistakes this lesson</h2>
+  <div id="mistakes"></div>
+  <h2 class="recap-title right-text">You got these right</h2>
+  <div id="rights"></div>
+  <div class="dock"><button id="recapDone" class="btn blue">Continue</button></div>
+</main>
+
 <div id="sheet" hidden>
   <div class="sheet-inner">
     <h3 id="verdict"></h3>
