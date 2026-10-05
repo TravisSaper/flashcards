@@ -134,4 +134,8 @@ try {
 }
 showHome();
 
+// iOS Safari ignores user-scalable=no, so block pinch zoom directly.
+for (const t of ['gesturestart', 'gesturechange']) document.addEventListener(t, e => e.preventDefault());
+document.addEventListener('touchmove', e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
+
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
