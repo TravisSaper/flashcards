@@ -14,12 +14,14 @@ const MASCOT = `<svg viewBox="0 0 100 100" aria-hidden="true">
 
 const $ = s => document.querySelector(s);
 const $in = (s, root) => root.querySelector(s);
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
 const today = (d = new Date()) => d.toLocaleDateString('en-CA'); // YYYY-MM-DD, local time
 const daysAgo = n => { const d = new Date(); d.setDate(d.getDate() - n); return today(d); };
 
 let cards = [];
 let progress = load('fc-progress', {});
 let stats = load('fc-stats', { xp: 0, streak: 0, last: '' });
+let topicPick = load('fc-topic', 'All'); // 'All' or a topic name
 let lesson = null; // { queue, total, results, picked, current, start }
 
 function load(key, fallback) {
@@ -51,14 +53,17 @@ function el(tag, cls, text) {
 // ---------- Home: level path ----------
 function showHome() {
   show('home');
-  const due = cards.filter(isDue).length;
+  const all = [...new Set(cards.map(c => c.topic))].sort();
+  if (topicPick !== 'All' && !all.includes(topicPick)) topicPick = 'All';
+  $('#topicName').textContent = topicPick === 'All' ? 'All topics' : topicPick;
+  const topics = topicPick === 'All' ? all : [topicPick];
+  const due = cards.filter(c => topics.includes(c.topic) && isDue(c)).length;
   $('#streak').textContent = streakNow();
   $('#xp').textContent = stats.xp;
   $('#due').textContent = due;
   $('#summary').textContent = !cards.length ? $('#summary').textContent
-    : due ? `${due} card${due > 1 ? 's' : ''} due today` : 'All caught up! Tap a topic to practise anyway.';
+    : due ? `${plural(due, 'card')} due today` : 'All caught up! Tap a topic to practise anyway.';
 
-  const topics = [...new Set(cards.map(c => c.topic))].sort();
   const path = $('#path');
   path.replaceChildren();
   let startPlaced = false;
@@ -66,7 +71,7 @@ function showHome() {
     const list = cards.filter(c => c.topic === topic);
     const dueHere = list.filter(isDue).length;
     const banner = el('button', 'banner');
-    banner.append(el('small', '', `Section ${ti + 1}`), el('b', '', topic), el('span', 'banner-sub', dueHere ? `${dueHere} due · ${list.length} cards` : `${list.length} cards · done for today`));
+    banner.append(el('small', '', `Section ${ti + 1}`), el('b', '', topic), el('span', 'banner-sub', dueHere ? `${dueHere} due · ${plural(list.length, 'card')}` : `${plural(list.length, 'card')} · done for today`));
     banner.onclick = () => startLesson(topic);
     path.append(banner);
 
@@ -94,6 +99,27 @@ function showHome() {
     });
     path.append(nodes);
   });
+}
+
+function showPicker() {
+  const list = $('#topicList');
+  list.replaceChildren();
+  const all = [...new Set(cards.map(c => c.topic))].sort();
+  for (const t of ['All', ...all]) {
+    const pool = t === 'All' ? cards : cards.filter(c => c.topic === t);
+    const due = pool.filter(isDue).length;
+    const b = el('button', 'pick' + (t === topicPick ? ' on' : ''));
+    b.append(el('b', '', t === 'All' ? 'All topics' : t), el('small', '', `${due} due · ${plural(pool.length, 'card')}`));
+    b.onclick = () => {
+      topicPick = t;
+      try { localStorage.setItem('fc-topic', JSON.stringify(t)); } catch {}
+      $('#picker').hidden = true;
+      showHome();
+    };
+    list.append(b);
+  }
+  if (all.length < 2) list.append(el('p', 'empty', 'Ask Claude to add cards on a new subject and it will show up here.'));
+  $('#picker').hidden = false;
 }
 
 // ---------- Lesson ----------
@@ -203,6 +229,8 @@ function showRecap() {
 // ---------- Wiring ----------
 for (const m of document.querySelectorAll('.mascot')) m.innerHTML = MASCOT;
 $('#check').onclick = check;
+$('#topicBtn').onclick = showPicker;
+$('#picker').onclick = e => { if (e.target.id === 'picker') $('#picker').hidden = true; };
 $('#next').onclick = next;
 $('#back').onclick = showHome;
 $('#toRecap').onclick = showRecap;

@@ -20,6 +20,7 @@
 <body>
 <main id="home">
   <header class="stats">
+    <button id="topicBtn" class="stat topic-btn" aria-label="Choose topic">📚 <b id="topicName">All</b> ▾</button>
     <span class="stat streak" title="Day streak">🔥 <b id="streak">0</b></span>
     <span class="stat xp" title="Total XP">⚡ <b id="xp">0</b></span>
     <span class="stat due" title="Cards due today">🎯 <b id="due">0</b></span>
@@ -71,6 +72,13 @@
   <div id="rights"></div>
   <div class="dock"><button id="recapDone" class="btn blue">Continue</button></div>
 </main>
+
+<div id="picker" hidden>
+  <div class="picker-inner" role="dialog" aria-label="Choose a topic">
+    <h3>Choose a topic</h3>
+    <div id="topicList"></div>
+  </div>
+</div>
 
 <div id="sheet" hidden>
   <div class="sheet-inner">

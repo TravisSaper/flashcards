@@ -1,5 +1,5 @@
 // Offline support: app files cache-first, deck.json network-first so new cards show up.
-const CACHE = 'fc-v3';
+const CACHE = 'fc-v4';
 const SHELL = ['./', 'index.html', 'style.css', 'app.js', 'engine.js', 'deck.json', 'manifest.json', 'apple-touch-icon.png'];
 
 self.addEventListener('install', e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())));
