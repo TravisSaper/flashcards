@@ -2,7 +2,6 @@ import { build } from './engine.js';
 
 const GAPS = [0, 1, 3, 7, 14, 30]; // days until next review after a right answer, indexed by box 1-5
 const XP_PER_RIGHT = 10;
-const ZIGZAG = [0, 45, 70, 45, 0, -45, -70, -45]; // px offsets for the level-path nodes
 const MASCOT = `<svg viewBox="0 0 100 100" aria-hidden="true">
   <rect x="30" y="8" width="56" height="70" rx="14" fill="var(--green-light)" transform="rotate(12 58 43)"/>
   <rect x="14" y="20" width="62" height="74" rx="16" fill="var(--green-edge)"/>
@@ -21,7 +20,6 @@ const daysAgo = n => { const d = new Date(); d.setDate(d.getDate() - n); return 
 let cards = [];
 let progress = load('fc-progress', {});
 let stats = load('fc-stats', { xp: 0, streak: 0, last: '' });
-let topicPick = load('fc-topic', 'All'); // 'All' or a topic name
 let lesson = null; // { queue, total, results, picked, current, start }
 
 function load(key, fallback) {
@@ -50,83 +48,36 @@ function el(tag, cls, text) {
   return e;
 }
 
-// ---------- Home: level path ----------
+// ---------- Home: topic select ----------
 function showHome() {
   show('home');
-  const all = [...new Set(cards.map(c => c.topic))].sort();
-  if (topicPick !== 'All' && !all.includes(topicPick)) topicPick = 'All';
-  $('#topicName').textContent = topicPick === 'All' ? 'All topics' : topicPick;
-  const topics = topicPick === 'All' ? all : [topicPick];
-  const due = cards.filter(c => topics.includes(c.topic) && isDue(c)).length;
+  const due = cards.filter(isDue).length;
   $('#streak').textContent = streakNow();
   $('#xp').textContent = stats.xp;
   $('#due').textContent = due;
   $('#summary').textContent = !cards.length ? $('#summary').textContent
-    : due ? `${plural(due, 'card')} due today` : 'All caught up! Tap a topic to practise anyway.';
+    : due ? `${plural(due, 'card')} due today. Pick a topic.` : 'All caught up! Tap a topic to practise anyway.';
 
-  const path = $('#path');
-  path.replaceChildren();
-  let startPlaced = false;
-  topics.forEach((topic, ti) => {
-    const list = cards.filter(c => c.topic === topic);
-    const dueHere = list.filter(isDue).length;
-    const banner = el('button', 'banner');
-    banner.append(el('small', '', `Section ${ti + 1}`), el('b', '', topic), el('span', 'banner-sub', dueHere ? `${dueHere} due · ${plural(list.length, 'card')}` : `${plural(list.length, 'card')} · done for today`));
-    banner.onclick = () => startLesson(topic);
-    path.append(banner);
-
-    const nodes = el('div', 'nodes');
-    list.forEach((c, i) => {
-      const box = progress[c.id]?.box || 0;
-      const n = el('button', 'node');
-      n.style.setProperty('--x', ZIGZAG[i % ZIGZAG.length] + 'px');
-      n.setAttribute('aria-label', `${topic} card ${i + 1}`);
-      if (isDue(c) && !startPlaced) {
-        startPlaced = true;
-        n.classList.add('current');
-        n.textContent = '★';
-        const tip = el('span', 'tip', box ? 'Review' : 'Start');
-        n.append(tip);
-      } else if (isDue(c)) {
-        n.classList.add('locked');
-        n.textContent = '★';
-      } else {
-        n.classList.add(box >= 4 ? 'gold' : 'done');
-        n.textContent = box >= 4 ? '👑' : '✓';
-      }
-      n.onclick = () => startLesson(topic);
-      nodes.append(n);
-    });
-    path.append(nodes);
-  });
-}
-
-function showPicker() {
-  const list = $('#topicList');
+  const list = $('#topics');
   list.replaceChildren();
-  const all = [...new Set(cards.map(c => c.topic))].sort();
-  for (const t of ['All', ...all]) {
+  const topics = [...new Set(cards.map(c => c.topic))].sort();
+  for (const t of topics.length > 1 ? ['All', ...topics] : topics) {
     const pool = t === 'All' ? cards : cards.filter(c => c.topic === t);
-    const due = pool.filter(isDue).length;
-    const b = el('button', 'pick' + (t === topicPick ? ' on' : ''));
-    b.append(el('b', '', t === 'All' ? 'All topics' : t), el('small', '', `${due} due · ${plural(pool.length, 'card')}`));
-    b.onclick = () => {
-      topicPick = t;
-      try { localStorage.setItem('fc-topic', JSON.stringify(t)); } catch {}
-      $('#picker').hidden = true;
-      showHome();
-    };
+    const dueHere = pool.filter(isDue).length;
+    const b = el('button', 'topic' + (dueHere ? ' has-due' : ''));
+    const name = el('span', 'name');
+    name.append(el('b', '', t === 'All' ? 'All topics' : t), el('small', '', dueHere ? `${dueHere} due today` : `${plural(pool.length, 'card')} · all caught up`));
+    b.append(el('span', 'badge', t === 'All' ? '★' : t[0]), name);
+    b.onclick = () => startLesson(t);
     list.append(b);
   }
-  if (all.length < 2) list.append(el('p', 'empty', 'Ask Claude to add cards on a new subject and it will show up here.'));
-  $('#picker').hidden = false;
 }
 
 // ---------- Lesson ----------
 function shuffled(a) { return a.map(x => [Math.random(), x]).sort((p, q) => p[0] - q[0]).map(p => p[1]); }
 
 function startLesson(topic) {
-  const pool = cards.filter(c => c.topic === topic);
+  const pool = topic === 'All' ? cards : cards.filter(c => c.topic === topic);
   const due = pool.filter(isDue);
   const queue = shuffled(due.length ? due : pool);
   lesson = { queue, total: queue.length, results: [], start: Date.now() };
@@ -229,8 +180,6 @@ function showRecap() {
 // ---------- Wiring ----------
 for (const m of document.querySelectorAll('.mascot')) m.innerHTML = MASCOT;
 $('#check').onclick = check;
-$('#topicBtn').onclick = showPicker;
-$('#picker').onclick = e => { if (e.target.id === 'picker') $('#picker').hidden = true; };
 $('#next').onclick = next;
 $('#back').onclick = showHome;
 $('#toRecap').onclick = showRecap;
