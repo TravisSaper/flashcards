@@ -35,22 +35,6 @@
       "answer": "m * g", "unit": "N", "dp": 1,
       "wrong": ["m / g", "m * 9.8", "m"],
       "explain": "W = mg = {m} × {g}"
-    },
-    {
-      "id": "chem-avogadro",
-      "topic": "Chemistry",
-      "q": "What is the Avogadro constant?",
-      "answer": "6.02 × 10²³ per mole",
-      "wrong": ["3.00 × 10⁸ per mole", "9.81 per mole", "1.60 × 10⁻¹⁹ per mole"]
-    },
-    {
-      "id": "chem-moles",
-      "topic": "Chemistry",
-      "q": "How many moles are in {m} g of water (Mr = 18)?",
-      "vars": { "m": { "min": 9, "max": 180, "step": 9 } },
-      "answer": "m / 18", "dp": 2, "unit": "mol",
-      "wrong": ["m * 18", "18 / m", "m / 16"],
-      "explain": "moles = mass / Mr = {m} / 18"
     }
   ]
 }

@@ -7,8 +7,8 @@ Append to `cards` in `deck.json`, run `node check.mjs`, commit, push. The app pi
 
 **Plain card**
 ```json
-{ "id": "chem-avogadro", "topic": "Chemistry", "q": "What is the Avogadro constant?",
-  "answer": "6.02 × 10²³ per mole", "wrong": ["3.00 × 10⁸ per mole", "9.81 per mole", "1.60 × 10⁻¹⁹ per mole"] }
+{ "id": "phys-unit-force", "topic": "Physics", "q": "What is the unit of force?",
+  "answer": "newton (N)", "wrong": ["joule (J)", "watt (W)", "pascal (Pa)"] }
 ```
 
 **Changing-numbers card**: `vars` get new random values every time the card is shown.
