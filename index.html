@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Flashcards</title>
+<meta name="theme-color" content="#4f46e5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Flashcards">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main id="home">
+  <h1>Flashcards</h1>
+  <p id="summary">Loading…</p>
+  <div id="topics"></div>
+  <footer>
+    <button id="export" class="link">Back up progress</button>
+    <button id="import" class="link">Restore</button>
+    <input id="importFile" type="file" accept="application/json" hidden>
+  </footer>
+</main>
+<main id="study" hidden>
+  <header><button id="back" class="link" aria-label="Back to topics">‹ Topics</button><span id="left"></span></header>
+  <p id="question"></p>
+  <div id="options"></div>
+  <p id="explain" hidden></p>
+  <button id="next" class="primary" hidden>Next</button>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>

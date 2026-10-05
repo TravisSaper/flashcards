@@ -1,0 +1,56 @@
+{
+  "cards": [
+    {
+      "id": "phys-weight-mass",
+      "topic": "Physics",
+      "q": "An object weighs {W} N on Earth. Find its mass. (g = 9.8 N/kg)",
+      "vars": { "W": { "min": 50, "max": 500, "step": 10 } },
+      "answer": "W / 9.8", "unit": "kg", "dp": 1,
+      "wrong": ["W * 9.8", "W / 9.8 * 2", "W"],
+      "explain": "W = mg, so m = W / g = {W} / 9.8"
+    },
+    {
+      "id": "phys-kinetic-energy",
+      "topic": "Physics",
+      "q": "A {m} kg object moves at {v} m/s. What is its kinetic energy?",
+      "vars": { "m": { "min": 2, "max": 20 }, "v": { "min": 2, "max": 15 } },
+      "answer": "0.5 * m * v^2", "unit": "J", "dp": 0,
+      "wrong": ["m * v^2", "0.5 * m * v", "m * v"],
+      "explain": "KE = ½mv² = 0.5 × {m} × {v}²"
+    },
+    {
+      "id": "phys-ohms-law",
+      "topic": "Physics",
+      "q": "A current of {I} A flows through a {R} Ω resistor. What is the potential difference across it?",
+      "vars": { "I": { "min": 0.5, "max": 5, "step": 0.5 }, "R": { "min": 2, "max": 50, "step": 2 } },
+      "answer": "I * R", "unit": "V", "dp": 1,
+      "wrong": ["R / I", "I / R", "I * R * 2"],
+      "explain": "V = IR = {I} × {R}"
+    },
+    {
+      "id": "phys-weight-planet",
+      "topic": "Physics",
+      "q": "A {m} kg astronaut stands on a planet where g = {g} N/kg. What is their weight?",
+      "vars": { "m": { "min": 50, "max": 100, "step": 5 }, "g": { "choices": [1.6, 3.7, 9.8, 24.8] } },
+      "answer": "m * g", "unit": "N", "dp": 1,
+      "wrong": ["m / g", "m * 9.8", "m"],
+      "explain": "W = mg = {m} × {g}"
+    },
+    {
+      "id": "chem-avogadro",
+      "topic": "Chemistry",
+      "q": "What is the Avogadro constant?",
+      "answer": "6.02 × 10²³ per mole",
+      "wrong": ["3.00 × 10⁸ per mole", "9.81 per mole", "1.60 × 10⁻¹⁹ per mole"]
+    },
+    {
+      "id": "chem-moles",
+      "topic": "Chemistry",
+      "q": "How many moles are in {m} g of water (Mr = 18)?",
+      "vars": { "m": { "min": 9, "max": 180, "step": 9 } },
+      "answer": "m / 18", "dp": 2, "unit": "mol",
+      "wrong": ["m * 18", "18 / m", "m / 16"],
+      "explain": "moles = mass / Mr = {m} / 18"
+    }
+  ]
+}
